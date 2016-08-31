@@ -5,10 +5,10 @@ $(function() {
         $.ajax({
           type: 'post',
           url: '/homes/valid_rc',
-          data: 'param1=' + pinCode + '&params2=' + sessionId,
+          data: 'pin_code=' + pinCode + '&token=' + sessionId,
           success: function(data) {
             console.log(data);
-            $('#result').html(data.toString())
+            $('#result').html(JSON.stringify(data))
           }
         });
     });

@@ -11,11 +11,11 @@ class HomesController < ApplicationController
   def valid_rc
     rcap = RingCaptcha::RingCaptcha.new(ENV['RING_CAPTCHA_APP_KEY'], ENV['RING_CAPTCHA_SECRET_KEY'])
 
-    @rcap_valid = rcap.is_valid?(params[:param1], params[:params2])
+    @validation = rcap.validate_pin_code(params[:pin_code], params[:token])
 
-    pp @rcap_valid
+    pp @validation
 
-    render json: @rcap_valid
+    render json: @validation
   end
 
 end

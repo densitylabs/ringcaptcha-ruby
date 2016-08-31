@@ -19,7 +19,7 @@ module RingCaptcha
       @status = -1
     end
 
-    def is_valid?(pin_code, token)
+    def validate_pin_code(pin_code, token)
       #TODO Check parameters
       data = {:secret_key => @secret_key, :token => token, :code => pin_code}
       sanitize_data(data)
@@ -34,6 +34,11 @@ module RingCaptcha
         @message = e.message
       end
 
+      body
+    end
+
+    def is_valid?(pin_code, token)
+      validate_pin_code(pin_code, token)
       @status == true
     end
 
