@@ -5,6 +5,28 @@ require 'json'
 module RingCaptcha
   class RingCaptchaRequestError < StandardError; end
 
+  class RingCaptchaVerification
+
+    extend Forwardable
+    PUBLIC_METHODS = [:status, :message, :transaction_id, :phone_number,  :geolocation, :phone_type, :carrier_name, :roaming, :risk, :json]
+
+    PUBLIC_METHODS.each do |m|
+      def_delegators :@json, m
+    end
+
+    def initialize(json)
+      @json = json
+    end
+
+    def valid?
+      @status == "SUCCESS"
+    end
+
+    def as_json(options={})
+      @json.slice(*PUBLIC_METHODS.map(&:to_s))
+    end
+  end
+
   class RingCaptcha
     @@rc_server     = 'api.ringcaptcha.com'
     @@user_agent    = 'ringcaptcha-ruby/1.0'
@@ -34,7 +56,7 @@ module RingCaptcha
         @message = e.message
       end
 
-      body
+      return RingCaptchaVerification.new(body)
     end
 
     def is_valid?(pin_code, token)
