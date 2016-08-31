@@ -10,27 +10,27 @@ module RingCaptcha
     attr_reader :status, :message, :transaction_id, :phone_number,  :geolocation, :phone_type, :carrier_name, :roaming, :risk
 
     def initialize(json)
-      @transaction_id = json.has_key?("id") ? json["id"] : false
-      @phone_number = json.has_key?("phone") ? json["phone"] : false
-      @geolocation = json.has_key?("geolocation") ? json["geolocation"] : false
-      @message = json.has_key?("message") ? json["message"] : false
-      @phone_type = json.has_key?("phone_type") ? json["phone_type"] : false
-      @carrier_name = json.has_key?("carrier") ? json["carrier"] : false
-      @roaming = json.has_key?("roaming") ? json["roaming"] : false
-      @risk = json.has_key?("threat_level") ? json["threat_level"] : false
+      @transaction_id = json["id"] || false
+      @phone_number = json["phone"] || false
+      @geolocation = json["geolocation"] || false
+      @message = json["message"] || false
+      @phone_type = json["phone_type"] || false
+      @carrier_name = json["carrier"] || false
+      @roaming = json["roaming"] || false
+      @risk = json["threat_level"] || false
     end
 
   end
 
   class RingCaptcha
     @@rc_server     = 'api.ringcaptcha.com'
-    @@user_agent    = 'ringcaptcha-ruby/1.0'    
-    
+    @@user_agent    = 'ringcaptcha-ruby/1.0'
+
     attr_accessor :secure
 
     def initialize(app_key, secret_key)
-    	@app_key = app_key
-    	@secret_key = secret_key
+      @app_key = app_key
+      @secret_key = secret_key
       @retry_attempts = 0
       @secure = true
       @status = -1
@@ -48,7 +48,7 @@ module RingCaptcha
         @status = response.class.name == "Net::HTTPOK" ? body['status'] == "SUCCESS" : 0
       rescue => e
         @status = 0
-        @message = e.message 
+        @message = e.message
         return false
       end
 
@@ -56,7 +56,7 @@ module RingCaptcha
 
     end
 
-  private
+    private
 
     def sanitize_data(data)
       data.each do |key,value|
@@ -67,7 +67,7 @@ module RingCaptcha
     def verify_rest_call(server, resource, data, port=80)
       port = @secure ? 443 : port
       url = "#{server}:#{port}/#{resource}"
-      
+
       uri = URI.parse(url)
       https = Net::HTTP.new(uri.host,uri.port)
       https.use_ssl = @secure
@@ -76,10 +76,10 @@ module RingCaptcha
       res = https.request(req)
 
       case res
-        when Net::HTTPSuccess, Net::HTTPRedirection
-          res
-        else
-          raise RingCaptchaRequestError, 'ERROR_PROCESING_REQUEST'
+      when Net::HTTPSuccess, Net::HTTPRedirection
+        res
+      else
+        raise RingCaptchaRequestError, 'ERROR_PROCESING_REQUEST'
       end
 
     end
