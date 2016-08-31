@@ -5,23 +5,6 @@ require 'json'
 module RingCaptcha
   class RingCaptchaRequestError < StandardError; end
 
-  class RingCaptchaVerification
-
-    attr_reader :status, :message, :transaction_id, :phone_number,  :geolocation, :phone_type, :carrier_name, :roaming, :risk
-
-    def initialize(json)
-      @transaction_id = json["id"] || false
-      @phone_number = json["phone"] || false
-      @geolocation = json["geolocation"] || false
-      @message = json["message"] || false
-      @phone_type = json["phone_type"] || false
-      @carrier_name = json["carrier"] || false
-      @roaming = json["roaming"] || false
-      @risk = json["threat_level"] || false
-    end
-
-  end
-
   class RingCaptcha
     @@rc_server     = 'api.ringcaptcha.com'
     @@user_agent    = 'ringcaptcha-ruby/1.0'
@@ -49,11 +32,9 @@ module RingCaptcha
       rescue => e
         @status = 0
         @message = e.message
-        return false
       end
 
-      return RingCaptchaVerification.new(body)
-
+      @status == true
     end
 
     private
